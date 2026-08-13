@@ -228,9 +228,12 @@ function renderMine(){
 }
 
 function renderCross(){
+  /* Le dénominateur est toujours 5 : une équipe Clash en compte 5, et tant qu'un joueur
+     n'a pas envoyé sa liste on ne peut pas dire qu'un logo est partagé. Compter sur le
+     nombre de listes collées ferait passer un logo au vert dès la première. */
   const sets = pastes.map(read), live = sets.filter(s => s.size);
-  const count = new Map(LOGOS.map(l => [l[0], live.filter(s => s.has(l[0])).length]));
-  const shared = live.length ? LOGOS.filter(l => count.get(l[0]) === live.length) : [];
+  const count = new Map(LOGOS.map(l => [l[0], sets.filter(s => s.has(l[0])).length]));
+  const shared = LOGOS.filter(l => count.get(l[0]) === 5);
   const list = sharedOnly ? shared : LOGOS;
 
   let h = '<div class="hero cut">'
@@ -243,8 +246,8 @@ function renderCross(){
     + (!live.length
         ? 'Paste each player\'s <code>{"l":[…]}</code> line below. The match updates as you type.'
         : live.length < 5
-          ? '<b>' + (5 - live.length) + '</b> list(s) still missing. The match runs on the '
-            + live.length + ' pasted so far: a logo counts as shared only if it is in <b>all</b> of them.'
+          ? '<b>' + (5 - live.length) + '</b> list(s) still missing — a logo only turns green once '
+            + 'all <b>5</b> players have it, so nothing can be green yet.'
           : shared.length >= TARGET
             ? '<b>You are set.</b> ' + shared.length + ' logos are owned by all 5 players, '
               + (shared.length - TARGET) + ' more than the ' + TARGET + ' needed.'
@@ -265,13 +268,12 @@ function renderCross(){
     + '<div class="sec"><h2>' + (sharedOnly ? "Shared logos" : "All " + LOGOS.length + " logos")
     +   '</h2><span>' + list.length + '</span><span class="rule"></span></div>'
     + '<div class="grid">' + list.map(l => {
-        const n = count.get(l[0]);
-        const cls = live.length && n === live.length ? "all" : n ? "part" : "none";
+        const n = count.get(l[0]), cls = n === 5 ? "all" : n ? "part" : "none";
         return '<div class="logo cut ' + cls + '" title="' + esc(l[1])
-          + ' — ' + n + ' of ' + live.length + ' players">'
+          + ' — ' + n + ' of 5 players">'
           + '<img loading="lazy" alt="" src="' + IMG(l[0]) + '" onerror="this.style.visibility=\'hidden\'">'
           + '<span class="ln">' + esc(l[1]) + '</span>'
-          + '<span class="cnt">' + n + '/' + (live.length || 5) + '</span></div>';
+          + '<span class="cnt">' + n + '/5</span></div>';
       }).join("") + '</div>';
 
   $("#vCross").innerHTML = h;
@@ -287,8 +289,8 @@ function renderCross(){
 }
 
 function refreshTabs(){
-  const live = pastes.map(read).filter(s => s.size);
-  const shared = live.length ? LOGOS.filter(l => live.every(s => s.has(l[0]))).length : 0;
+  const sets = pastes.map(read), live = sets.filter(s => s.size);
+  const shared = LOGOS.filter(l => sets.every(s => s.has(l[0]))).length;
   $("#tabMine").textContent  = mine.size + " / " + LOGOS.length + " selected";
   $("#tabCross").textContent = live.length
     ? shared + " shared · " + live.length + " lists" : "no list yet";
