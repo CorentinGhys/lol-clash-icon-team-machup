@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clash Logos — team match-up</title>
+<meta name="description" content="Tick the Clash logos you own, share your list, and find the ones your whole team has.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2322303D'/%3E%3Cpath d='M16 3 L27 8 V16 C27 23 22 27.5 16 29.5 C10 27.5 5 23 5 16 V8 Z' fill='%2331434F' stroke='%23E0C58C' stroke-width='1.6'/%3E%3Cpath d='M16 9.5 L18.4 14.6 L24 15.4 L19.9 19.2 L21 24.8 L16 22 L11 24.8 L12.1 19.2 L8 15.4 L13.6 14.6 Z' fill='%23E0C58C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#22303D; --bg2:#2B3B4A;
+    --panel:#31434F; --panel-hi:#3B505F;
+    --line:#47606F; --line-hi:#5F7C8E;
+    --text:#EDF3F7; --muted:#A9BECD;
+    --gold:#E0C58C; --teal:#6FD3C2;
+    --notch:9px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  [hidden]{display:none!important}
+  body{background:var(--bg);
+       background-image:linear-gradient(180deg,var(--bg2) 0,var(--bg) 340px);
+       background-attachment:fixed;color:var(--text);
+       font:500 16px/1.4 "Barlow Semi Condensed","Arial Narrow",sans-serif;
+       font-variant-numeric:tabular-nums;min-height:100vh}
+  .cut{clip-path:polygon(var(--notch) 0,100% 0,100% calc(100% - var(--notch)),calc(100% - var(--notch)) 100%,0 100%,0 var(--notch))}
+
+  header{position:sticky;top:0;z-index:10;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .bar{padding:13px 22px 0;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .title{font-family:Cinzel,"Times New Roman",serif;font-weight:700;letter-spacing:.16em;
+         text-transform:uppercase;font-size:15px;color:var(--gold)}
+  .sub{font-size:13px;color:#7E97A8;letter-spacing:.04em}
+  nav{margin-top:12px;padding:0 22px;display:flex;gap:2px;flex-wrap:wrap}
+  .tab{flex:1 1 0;min-width:150px;max-width:320px;background:transparent;border:0;
+       border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;padding:11px 8px 9px;
+       font-family:Cinzel,"Times New Roman",serif;font-weight:500;font-size:14px;
+       letter-spacing:.13em;text-transform:uppercase;transition:color .16s,border-color .16s,background .16s}
+  .tab i{display:block;font-style:normal;font-family:"Barlow Semi Condensed",sans-serif;
+         font-size:11px;letter-spacing:.08em;color:#7E97A8;margin-top:3px}
+  .tab:hover{color:var(--text);background:rgba(224,197,140,.08)}
+  .tab[aria-selected="true"]{color:var(--gold);border-bottom-color:var(--gold)}
+  .tab[aria-selected="true"] i{color:var(--gold);opacity:.7}
+  .tab:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+
+  main{padding:18px 22px 60px}
+  .hero{display:flex;gap:22px;flex-wrap:wrap;align-items:center;
+        background:linear-gradient(135deg,#2E4353,#22303D);border:1px solid var(--gold);
+        padding:14px 18px;margin-bottom:14px}
+  .hb{display:flex;flex-direction:column;gap:2px}
+  .hn{font:700 32px/1 Cinzel,serif;color:var(--gold)}
+  .hn.sm{font-size:22px;color:var(--text)}
+  .hn.ok{color:var(--teal)}
+  .hl{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:#9FB3C2}
+  .ht{flex:1;min-width:240px;color:var(--muted);font-size:13.5px;line-height:1.5}
+  .ht b{color:var(--text)} .ht code{font:400 12.5px ui-monospace,Menlo,monospace;color:var(--teal)}
+
+  .act{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .big{background:var(--gold);border:1px solid var(--gold);color:#22303D;cursor:pointer;
+       padding:14px 26px;font:700 17px/1 Cinzel,serif;letter-spacing:.14em;text-transform:uppercase;
+       transition:filter .15s}
+  .big:hover{filter:brightness(1.12)}
+  .big:active{filter:brightness(.92)}
+  .big:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+  .big.done{background:var(--teal);border-color:var(--teal)}
+  .btn{background:var(--panel);border:1px solid var(--line);color:var(--muted);cursor:pointer;
+       padding:9px 15px;font:600 13px/1 "Barlow Semi Condensed",sans-serif;
+       letter-spacing:.06em;text-transform:uppercase;transition:color .15s,background .15s}
+  .btn:hover{color:var(--text);background:var(--panel-hi)}
+  .btn[aria-pressed="true"]{background:var(--panel-hi);color:var(--gold);border-color:var(--gold)}
+  .btn:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+  /* sortie live : ce que le bouton copie, visible et sélectionnable */
+  .out{flex:1 1 260px;min-width:0;background:#25323D;border:1px solid var(--line);
+       color:var(--teal);font:400 13px/1.4 ui-monospace,Menlo,monospace;padding:11px 12px;
+       height:44px;resize:none;white-space:pre;overflow-x:auto}
+  .out:focus{outline:0;border-color:var(--teal)}
+
+  .sec{display:flex;align-items:center;gap:12px;margin:18px 0 8px}
+  .sec h2{font-family:Cinzel,serif;font-weight:700;font-size:13.5px;letter-spacing:.18em;
+          text-transform:uppercase;color:var(--gold);white-space:nowrap}
+  .sec span{color:#7E97A8;font-size:12.5px;letter-spacing:.08em;white-space:nowrap}
+  .sec .rule{flex:1;height:1px;background:var(--line)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+  .logo{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 5px 7px;
+        background:var(--panel);border:1px solid var(--line);cursor:pointer;color:inherit;
+        font:inherit;transition:border-color .15s,background .15s}
+  .logo:hover{border-color:var(--line-hi);background:var(--panel-hi)}
+  .logo:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+  /* le logo garde ses couleurs — sinon on ne le reconnaît pas ; c'est la case qui s'allume */
+  .logo img{width:62px;height:62px;object-fit:contain;display:block}
+  .logo .ln{font-size:12px;line-height:1.25;text-align:center;color:#8FA6B6;
+            display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .logo .lid{font-size:10px;color:#5D7386;letter-spacing:.06em}
+  .logo[aria-pressed="true"]{border-color:var(--gold);background:#3d4b58;
+       box-shadow:inset 0 0 0 1px var(--gold)}
+  .logo[aria-pressed="true"] .ln{color:var(--gold)}
+  .logo[aria-pressed="true"] .lid{color:#a08a5e}
+  /* onglet croisement, trois niveaux : gris = personne, jaune = 1 à 4, vert = les 5 */
+  .logo .cnt{font:700 12px/1 Cinzel,serif;letter-spacing:.06em}
+  .logo.none{border-color:var(--line);background:#2b3945}
+  .logo.none img{filter:grayscale(1) brightness(.5)}
+  .logo.none .ln{color:#5D7386} .logo.none .cnt{color:#5D7386}
+  .logo.part{border-color:#9a7b3f;background:#3a3629}
+  .logo.part .ln{color:var(--gold)} .logo.part .cnt{color:var(--gold)}
+  .logo.all{border-color:var(--teal);background:#2c4a48;box-shadow:inset 0 0 0 1px var(--teal)}
+  .logo.all .ln{color:var(--teal)}
+  .logo.all .cnt{color:var(--teal)}
+
+  .paste{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin-bottom:8px}
+  .paste label{display:flex;flex-direction:column;gap:4px;font-size:12px;letter-spacing:.08em;
+               text-transform:uppercase;color:#7E97A8}
+  .paste textarea{height:74px;background:#25323D;border:1px solid var(--line);color:var(--text);
+        font:400 12px/1.4 ui-monospace,Menlo,monospace;padding:7px;resize:vertical}
+  .paste textarea:focus{outline:0;border-color:var(--teal)}
+  .paste .st{font-size:11px;letter-spacing:.04em;text-transform:none;color:#6B8296}
+  .paste .st.ok{color:var(--teal)} .paste .st.ko{color:#ff8fa3}
+
+  @media (max-width:620px){
+    .bar,nav{padding-left:14px;padding-right:14px} main{padding:14px 14px 44px}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}
+    .big{width:100%;padding:15px 12px;font-size:15px}
+    .out{flex:1 1 100%}
+    .tab{min-width:120px;font-size:12px;letter-spacing:.08em}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="title">Clash Logos</div>
+    <div class="sub">Find the logos your whole team owns</div>
+  </div>
+  <nav role="tablist">
+    <button class="tab" type="button" role="tab" data-tab="mine" aria-selected="true">
+      My logos<i id="tabMine"></i></button>
+    <button class="tab" type="button" role="tab" data-tab="cross" aria-selected="false">
+      Match 5 lists<i id="tabCross"></i></button>
+  </nav>
+</header>
+
+<main>
+  <div id="vMine"></div>
+  <div id="vCross" hidden></div>
+</main>
+
+<script>
+/* The 87 Clash team logos: [id, name]. Logo 0 ("no logo") is left out.
+   Source: Riot asset catalogue (v1/generic-assets.json) + Clash client strings. */
+const LOGOS = [[1,"Wolves"],[2,"Urf"],[3,"Tibbers"],[4,"Raptor"],[5,"Pool Party"],[6,"Bomb"],[7,"Blood Moon"],[8,"Chomper"],[9,"Voidling"],[10,"Dark Star"],[11,"Meeps"],[12,"Krug"],[13,"Minion"],[14,"Poro"],[15,"Gromp"],[16,"Sentinel"],[17,"Brambleback"],[18,"Dragon"],[19,"Rift Herald"],[20,"Baron Nashor"],[21,"Helmet Bro"],[22,"Lantern"],[23,"Scuttle Crab"],[24,"Ward"],[25,"Mushroom"],[26,"Sword"],[27,"Cannon"],[28,"Shopkeep"],[29,"Maiden"],[30,"Pentakill"],[31,"Turret"],[32,"Arcade"],[33,"Rocket"],[34,"Demacia"],[35,"Shurima"],[36,"Freljord"],[37,"Noxus"],[38,"Bilgewater"],[39,"Shadow Isles"],[40,"Mount Targon"],[41,"Bandle City"],[42,"The Void"],[43,"Ionia"],[44,"Zaun"],[45,"Piltover"],[46,"Star Guardian"],[47,"Battlecast"],[48,"Championship"],[49,"MSI"],[50,"Hexwrench"],[51,"Tools"],[52,"Worlds 2020"],[53,"2020 Contender"],[54,"2020 Conqueror"],[55,"2020 Champion"],[56,"Forge God"],[57,"Noxus Crest"],[58,"Shurima Crest"],[59,"Bilgewater Serpent"],[60,"MSI 2021"],[61,"Ruined Bilgewater"],[62,"Targon Rings"],[63,"Bandle Tree"],[64,"Void Crest"],[65,"Worlds 2021"],[66,"2021 Contender"],[67,"2021 Conqueror"],[68,"2021 Champion"],[69,"Ixtal"],[70,"MSI 2022"],[71,"Worlds 2022"],[72,"2022 Contender"],[73,"2022 Conqueror"],[74,"2022 Champion"],[75,"MSI 2023"],[76,"Worlds 2023"],[77,"2023 Contender"],[78,"2023 Conqueror"],[79,"2023 Champion"],[80,"Logo 80"],[81,"Logo 81"],[82,"Logo 82"],[83,"Logo 83"],[84,"Logo 84"],[85,"Logo 85"],[86,"Logo 86"],[87,"Logo 87"]];
+const TARGET = 30;                     // shared logos required by the Coordinated Clash challenge
+const IMG = id => "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/"
+                + "global/default/assets/clash/roster-logos/" + id + "/1.png";
+const KEY = "clashLogos";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let mine = new Set(), tab = "mine", pastes = ["","","","",""], sharedOnly = false;
+
+try{ (JSON.parse(localStorage.getItem(KEY)) || []).forEach(i => mine.add(+i)); } catch(e){}
+const store = () => { try{ localStorage.setItem(KEY, JSON.stringify([...mine])); } catch(e){} };
+
+/* Exchange format, deliberately tiny: {"l":[1,2,5]} */
+const asJson = () => '{"l":[' + [...mine].sort((a,b) => a-b).join(",") + ']}';
+/* Reading assumes nothing: every valid integer in the pasted text is picked up. */
+function read(txt){
+  const s = new Set();
+  (String(txt).match(/\d+/g) || []).forEach(n => {
+    const i = +n; if (i >= 1 && i <= 87) s.add(i);
+  });
+  return s;
+}
+
+function myCard(l){
+  const on = mine.has(l[0]);
+  return '<button type="button" class="logo cut" data-id="' + l[0] + '" aria-pressed="' + on
+    + '" title="' + esc(l[1]) + ' — logo #' + l[0] + '">'
+    + '<img loading="lazy" alt="" src="' + IMG(l[0]) + '" onerror="this.style.visibility=\'hidden\'">'
+    + '<span class="ln">' + esc(l[1]) + '</span>'
+    + '<span class="lid">#' + l[0] + '</span></button>';
+}
+
+function renderMine(){
+  const n = mine.size;
+  $("#vMine").innerHTML =
+      '<div class="hero cut">'
+    +   '<div class="hb"><span class="hn' + (n >= TARGET ? " ok" : "") + '">' + n + '</span>'
+    +     '<span class="hl">logos selected</span></div>'
+    +   '<div class="hb"><span class="hn sm">' + LOGOS.length + '</span>'
+    +     '<span class="hl">in the game</span></div>'
+    +   '<div class="ht">Tick every logo you own, then <b>copy your result</b> and send it to your '
+    +     'team. One person pastes all five lists in the <b>Match 5 lists</b> tab to see which ones '
+    +     'you all have. Target: <b>' + TARGET + '</b> shared logos. Your selection is saved in '
+    +     'this browser.</div>'
+    + '</div>'
+    + '<div class="act">'
+    +   '<button class="big cut" type="button" id="copy">Copy result</button>'
+    +   '<textarea class="out" id="out" readonly spellcheck="false" '
+    +     'aria-label="Your list, ready to share"></textarea>'
+    +   '<button class="btn cut" type="button" id="clear">Clear all</button>'
+    + '</div>'
+    + '<div class="sec"><h2>All ' + LOGOS.length + ' logos</h2><span>click = owned</span>'
+    +   '<span class="rule"></span></div>'
+    + '<div class="grid">' + LOGOS.map(myCard).join("") + '</div>';
+
+  const out = $("#out");
+  out.value = n ? asJson() : "";
+  out.placeholder = "Pick your logos above — your list shows up here";
+  out.onclick = () => out.select();
+
+  $("#vMine").querySelectorAll("[data-id]").forEach(b => b.onclick = () => {
+    const i = +b.dataset.id;
+    mine.has(i) ? mine.delete(i) : mine.add(i);
+    store(); renderMine(); refreshTabs();
+  });
+  $("#clear").onclick = () => { mine.clear(); store(); renderMine(); refreshTabs(); };
+  $("#copy").onclick = async () => {
+    const t = asJson(), b = $("#copy");
+    try{ await navigator.clipboard.writeText(t); }
+    catch(e){ out.select(); try{ document.execCommand("copy"); } catch(e2){} }
+    b.textContent = "Copied ✓"; b.classList.add("done");
+    setTimeout(() => { b.textContent = "Copy result"; b.classList.remove("done"); }, 1800);
+  };
+}
+
+function renderCross(){
+  const sets = pastes.map(read), live = sets.filter(s => s.size);
+  const count = new Map(LOGOS.map(l => [l[0], live.filter(s => s.has(l[0])).length]));
+  const shared = live.length ? LOGOS.filter(l => count.get(l[0]) === live.length) : [];
+  const list = sharedOnly ? shared : LOGOS;
+
+  let h = '<div class="hero cut">'
+    + '<div class="hb"><span class="hn' + (shared.length >= TARGET ? " ok" : "") + '">'
+    +   shared.length + '</span><span class="hl">shared logos</span></div>'
+    + '<div class="hb"><span class="hn sm">' + TARGET + '</span><span class="hl">target</span></div>'
+    + '<div class="hb"><span class="hn sm">' + live.length + '</span>'
+    +   '<span class="hl">lists pasted</span></div>'
+    + '<div class="ht">'
+    + (!live.length
+        ? 'Paste each player\'s <code>{"l":[…]}</code> line below. The match updates as you type.'
+        : live.length < 5
+          ? '<b>' + (5 - live.length) + '</b> list(s) still missing. The match runs on the '
+            + live.length + ' pasted so far: a logo counts as shared only if it is in <b>all</b> of them.'
+          : shared.length >= TARGET
+            ? '<b>You are set.</b> ' + shared.length + ' logos are owned by all 5 players, '
+              + (shared.length - TARGET) + ' more than the ' + TARGET + ' needed.'
+            : '<b>' + (TARGET - shared.length) + '</b> shared logos missing.')
+    + '</div></div>'
+    + '<div class="paste">' + [0,1,2,3,4].map(i => {
+        const n = sets[i].size, empty = !pastes[i].trim();
+        return '<label>Player ' + (i+1)
+          + '<textarea data-i="' + i + '" spellcheck="false" placeholder=\'{"l":[1,2,5]}\'>'
+          + esc(pastes[i]) + '</textarea>'
+          + '<span class="st' + (n ? " ok" : empty ? "" : " ko") + '">'
+          + (n ? n + " logos read" : empty ? "empty" : "no id found")
+          + '</span></label>';
+      }).join("") + '</div>'
+    + '<div class="act"><button class="btn cut" type="button" id="filter" aria-pressed="'
+    +   sharedOnly + '">Shared only</button>'
+    +   '<button class="btn cut" type="button" id="wipe">Clear boxes</button></div>'
+    + '<div class="sec"><h2>' + (sharedOnly ? "Shared logos" : "All " + LOGOS.length + " logos")
+    +   '</h2><span>' + list.length + '</span><span class="rule"></span></div>'
+    + '<div class="grid">' + list.map(l => {
+        const n = count.get(l[0]);
+        const cls = live.length && n === live.length ? "all" : n ? "part" : "none";
+        return '<div class="logo cut ' + cls + '" title="' + esc(l[1])
+          + ' — ' + n + ' of ' + live.length + ' players">'
+          + '<img loading="lazy" alt="" src="' + IMG(l[0]) + '" onerror="this.style.visibility=\'hidden\'">'
+          + '<span class="ln">' + esc(l[1]) + '</span>'
+          + '<span class="cnt">' + n + '/' + (live.length || 5) + '</span></div>';
+      }).join("") + '</div>';
+
+  $("#vCross").innerHTML = h;
+  $("#vCross").querySelectorAll("[data-i]").forEach(t => t.oninput = () => {
+    pastes[+t.dataset.i] = t.value;
+    const p = t.selectionStart, i = t.dataset.i;
+    renderCross(); refreshTabs();
+    const t2 = $('[data-i="' + i + '"]');
+    if (t2){ t2.focus(); try{ t2.setSelectionRange(p, p); } catch(e){} }
+  });
+  $("#filter").onclick = () => { sharedOnly = !sharedOnly; renderCross(); };
+  $("#wipe").onclick = () => { pastes = ["","","","",""]; renderCross(); refreshTabs(); };
+}
+
+function refreshTabs(){
+  const live = pastes.map(read).filter(s => s.size);
+  const shared = live.length ? LOGOS.filter(l => live.every(s => s.has(l[0]))).length : 0;
+  $("#tabMine").textContent  = mine.size + " / " + LOGOS.length + " selected";
+  $("#tabCross").textContent = live.length
+    ? shared + " shared · " + live.length + " lists" : "no list yet";
+}
+
+document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
+  tab = b.dataset.tab;
+  document.querySelectorAll("[data-tab]").forEach(x =>
+    x.setAttribute("aria-selected", x.dataset.tab === tab));
+  $("#vMine").hidden  = tab !== "mine";
+  $("#vCross").hidden = tab !== "cross";
+  tab === "cross" ? renderCross() : renderMine();
+});
+
+renderMine(); renderCross(); refreshTabs();
+</script>
+</body>
+</html>
