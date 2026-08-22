@@ -97,6 +97,11 @@
        box-shadow:inset 0 0 0 1px var(--gold)}
   .logo[aria-pressed="true"] .ln{color:var(--gold)}
   .logo[aria-pressed="true"] .lid{color:#a08a5e}
+  .logo .base{font-size:9px;line-height:1;letter-spacing:.07em;text-transform:uppercase;color:var(--teal)}
+  .logo:disabled{opacity:1}
+  .logo.default,.logo.default:hover{border-color:var(--teal);background:#2c4a48;cursor:default;
+        box-shadow:inset 0 0 0 1px var(--teal)}
+  .logo.default .ln,.logo.default .lid{color:var(--teal)}
   /* onglet croisement, trois niveaux : gris = personne, jaune = 1 à 4, vert = les 5 */
   .logo .cnt{font:700 12px/1 Cinzel,serif;letter-spacing:.06em}
   .logo.none{border-color:var(--line);background:#2b3945}
@@ -151,7 +156,10 @@
 /* The 87 Clash team logos: [id, name]. Logo 0 ("no logo") is left out.
    Source: Riot asset catalogue (v1/generic-assets.json) + Clash client strings. */
 const LOGOS = [[1,"Wolves"],[2,"Urf"],[3,"Tibbers"],[4,"Raptor"],[5,"Pool Party"],[6,"Bomb"],[7,"Blood Moon"],[8,"Chomper"],[9,"Voidling"],[10,"Dark Star"],[11,"Meeps"],[12,"Krug"],[13,"Minion"],[14,"Poro"],[15,"Gromp"],[16,"Sentinel"],[17,"Brambleback"],[18,"Dragon"],[19,"Rift Herald"],[20,"Baron Nashor"],[21,"Helmet Bro"],[22,"Lantern"],[23,"Scuttle Crab"],[24,"Ward"],[25,"Mushroom"],[26,"Sword"],[27,"Cannon"],[28,"Shopkeep"],[29,"Maiden"],[30,"Pentakill"],[31,"Turret"],[32,"Arcade"],[33,"Rocket"],[34,"Demacia"],[35,"Shurima"],[36,"Freljord"],[37,"Noxus"],[38,"Bilgewater"],[39,"Shadow Isles"],[40,"Mount Targon"],[41,"Bandle City"],[42,"The Void"],[43,"Ionia"],[44,"Zaun"],[45,"Piltover"],[46,"Star Guardian"],[47,"Battlecast"],[48,"Championship"],[49,"MSI"],[50,"Hexwrench"],[51,"Tools"],[52,"Worlds 2020"],[53,"2020 Contender"],[54,"2020 Conqueror"],[55,"2020 Champion"],[56,"Forge God"],[57,"Noxus Crest"],[58,"Shurima Crest"],[59,"Bilgewater Serpent"],[60,"MSI 2021"],[61,"Ruined Bilgewater"],[62,"Targon Rings"],[63,"Bandle Tree"],[64,"Void Crest"],[65,"Worlds 2021"],[66,"2021 Contender"],[67,"2021 Conqueror"],[68,"2021 Champion"],[69,"Ixtal"],[70,"MSI 2022"],[71,"Worlds 2022"],[72,"2022 Contender"],[73,"2022 Conqueror"],[74,"2022 Champion"],[75,"MSI 2023"],[76,"Worlds 2023"],[77,"2023 Contender"],[78,"2023 Conqueror"],[79,"2023 Champion"],[80,"Logo 80"],[81,"Logo 81"],[82,"Logo 82"],[83,"Logo 83"],[84,"Logo 84"],[85,"Logo 85"],[86,"Logo 86"],[87,"Logo 87"]];
-const TARGET = 30;                     // shared logos required by the Coordinated Clash challenge
+const DEFAULT_IDS = [1,4,12,13];       // included by default on every account
+const DEFAULT_LOGOS = new Set(DEFAULT_IDS);
+const ADDITIONAL_TARGET = 30;
+const TARGET = DEFAULT_IDS.length + ADDITIONAL_TARGET;
 const IMG = id => "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/"
                 + "global/default/assets/clash/roster-logos/" + id + "/1.png";
 const KEY = "clashLogos";
@@ -159,10 +167,16 @@ const KEY = "clashLogos";
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-let mine = new Set(), tab = "mine", pastes = ["","","","",""], sharedOnly = false;
+const addDefaults = set => { DEFAULT_IDS.forEach(i => set.add(i)); return set; };
 
-try{ (JSON.parse(localStorage.getItem(KEY)) || []).forEach(i => mine.add(+i)); } catch(e){}
+let mine = new Set(DEFAULT_IDS), tab = "mine", pastes = ["","","","",""], sharedOnly = false;
+
+try{ (JSON.parse(localStorage.getItem(KEY)) || []).forEach(i => {
+  i = +i; if (i >= 1 && i <= LOGOS.length) mine.add(i);
+}); } catch(e){}
+addDefaults(mine);
 const store = () => { try{ localStorage.setItem(KEY, JSON.stringify([...mine])); } catch(e){} };
+store();
 
 /* Exchange format, deliberately tiny: {"l":[1,2,5]} */
 const asJson = () => '{"l":[' + [...mine].sort((a,b) => a-b).join(",") + ']}';
@@ -177,11 +191,14 @@ function read(txt){
 
 function myCard(l){
   const on = mine.has(l[0]);
-  return '<button type="button" class="logo cut" data-id="' + l[0] + '" aria-pressed="' + on
-    + '" title="' + esc(l[1]) + ' — logo #' + l[0] + '">'
+  const base = DEFAULT_LOGOS.has(l[0]);
+  return '<button type="button" class="logo cut' + (base ? " default" : "") + '" data-id="' + l[0]
+    + '" aria-pressed="' + on + '"' + (base ? " disabled" : "") + ' title="' + esc(l[1])
+    + ' — logo #' + l[0] + (base ? ' — included by default on every account' : '') + '">'
     + '<img loading="lazy" alt="" src="' + IMG(l[0]) + '" onerror="this.style.visibility=\'hidden\'">'
     + '<span class="ln">' + esc(l[1]) + '</span>'
-    + '<span class="lid">#' + l[0] + '</span></button>';
+    + '<span class="lid">#' + l[0] + '</span>'
+    + (base ? '<span class="base">Included by default</span>' : '') + '</button>';
 }
 
 function renderMine(){
@@ -192,18 +209,21 @@ function renderMine(){
     +     '<span class="hl">logos selected</span></div>'
     +   '<div class="hb"><span class="hn sm">' + LOGOS.length + '</span>'
     +     '<span class="hl">in the game</span></div>'
+    +   '<div class="hb"><span class="hn sm">' + TARGET + '</span>'
+    +     '<span class="hl">total target</span></div>'
     +   '<div class="ht">Tick every logo you own, then <b>copy your result</b> and send it to your '
     +     'team. One person pastes all five lists in the <b>Match 5 lists</b> tab to see which ones '
-    +     'you all have. Target: <b>' + TARGET + '</b> shared logos. Your selection is saved in '
-    +     'this browser.</div>'
+    +     'you all have. Logos <b>#1, #4, #12 and #13</b> are included by default on every account. '
+    +     'Target: <b>' + TARGET + ' shared logos total</b> — 4 default + <b>' + ADDITIONAL_TARGET
+    +     ' additional</b>. Your selection is saved in this browser.</div>'
     + '</div>'
     + '<div class="act">'
     +   '<button class="big cut" type="button" id="copy">Copy result</button>'
     +   '<textarea class="out" id="out" readonly spellcheck="false" '
     +     'aria-label="Your list, ready to share"></textarea>'
-    +   '<button class="btn cut" type="button" id="clear">Clear all</button>'
+    +   '<button class="btn cut" type="button" id="clear">Clear extras</button>'
     + '</div>'
-    + '<div class="sec"><h2>All ' + LOGOS.length + ' logos</h2><span>click = owned</span>'
+    + '<div class="sec"><h2>All ' + LOGOS.length + ' logos</h2><span>4 default · click extras = owned</span>'
     +   '<span class="rule"></span></div>'
     + '<div class="grid">' + LOGOS.map(myCard).join("") + '</div>';
 
@@ -217,7 +237,7 @@ function renderMine(){
     mine.has(i) ? mine.delete(i) : mine.add(i);
     store(); renderMine(); refreshTabs();
   });
-  $("#clear").onclick = () => { mine.clear(); store(); renderMine(); refreshTabs(); };
+  $("#clear").onclick = () => { mine = new Set(DEFAULT_IDS); store(); renderMine(); refreshTabs(); };
   $("#copy").onclick = async () => {
     const t = asJson(), b = $("#copy");
     try{ await navigator.clipboard.writeText(t); }
@@ -228,10 +248,12 @@ function renderMine(){
 }
 
 function renderCross(){
-  /* Le dénominateur est toujours 5 : une équipe Clash en compte 5, et tant qu'un joueur
-     n'a pas envoyé sa liste on ne peut pas dire qu'un logo est partagé. Compter sur le
-     nombre de listes collées ferait passer un logo au vert dès la première. */
-  const sets = pastes.map(read), live = sets.filter(s => s.size);
+  /* Le dénominateur reste 5 : hors logos par défaut, un logo n'est partagé que lorsque
+     les cinq joueurs l'ont dans leur liste. */
+  const entered = pastes.map(read), live = entered.filter(s => s.size);
+  /* The four account-default logos are known to be owned by all five players, even before
+     their lists are pasted. Keep `live` based on entered text so empty boxes stay empty. */
+  const sets = entered.map(s => addDefaults(new Set(s)));
   const count = new Map(LOGOS.map(l => [l[0], sets.filter(s => s.has(l[0])).length]));
   const shared = LOGOS.filter(l => count.get(l[0]) === 5);
   const list = sharedOnly ? shared : LOGOS;
@@ -239,22 +261,24 @@ function renderCross(){
   let h = '<div class="hero cut">'
     + '<div class="hb"><span class="hn' + (shared.length >= TARGET ? " ok" : "") + '">'
     +   shared.length + '</span><span class="hl">shared logos</span></div>'
-    + '<div class="hb"><span class="hn sm">' + TARGET + '</span><span class="hl">target</span></div>'
+    + '<div class="hb"><span class="hn sm">' + TARGET + '</span><span class="hl">total target</span></div>'
     + '<div class="hb"><span class="hn sm">' + live.length + '</span>'
     +   '<span class="hl">lists pasted</span></div>'
     + '<div class="ht">'
     + (!live.length
-        ? 'Paste each player\'s <code>{"l":[…]}</code> line below. The match updates as you type.'
+        ? 'The <b>4 default logos</b> (#1, #4, #12 and #13) are already counted for every player. '
+          + 'Paste each player\'s <code>{"l":[…]}</code> line below to find the <b>'
+          + ADDITIONAL_TARGET + ' additional</b> shared logos.'
         : live.length < 5
-          ? '<b>' + (5 - live.length) + '</b> list(s) still missing — a logo only turns green once '
-            + 'all <b>5</b> players have it, so nothing can be green yet.'
+          ? '<b>' + (5 - live.length) + '</b> list(s) still missing — only the 4 default logos can '
+            + 'be shared until all <b>5</b> lists are pasted.'
           : shared.length >= TARGET
-            ? '<b>You are set.</b> ' + shared.length + ' logos are owned by all 5 players, '
-              + (shared.length - TARGET) + ' more than the ' + TARGET + ' needed.'
-            : '<b>' + (TARGET - shared.length) + '</b> shared logos missing.')
+            ? '<b>You are set.</b> ' + shared.length + ' logos are owned by all 5 players: 4 default '
+              + '+ ' + (shared.length - DEFAULT_IDS.length) + ' additional.'
+            : '<b>' + (TARGET - shared.length) + '</b> additional shared logos missing.')
     + '</div></div>'
     + '<div class="paste">' + [0,1,2,3,4].map(i => {
-        const n = sets[i].size, empty = !pastes[i].trim();
+        const n = entered[i].size ? sets[i].size : 0, empty = !pastes[i].trim();
         return '<label>Player ' + (i+1)
           + '<textarea data-i="' + i + '" spellcheck="false" placeholder=\'{"l":[1,2,5]}\'>'
           + esc(pastes[i]) + '</textarea>'
@@ -273,7 +297,8 @@ function renderCross(){
           + ' — ' + n + ' of 5 players">'
           + '<img loading="lazy" alt="" src="' + IMG(l[0]) + '" onerror="this.style.visibility=\'hidden\'">'
           + '<span class="ln">' + esc(l[1]) + '</span>'
-          + '<span class="cnt">' + n + '/5</span></div>';
+          + '<span class="cnt">' + n + '/5</span>'
+          + (DEFAULT_LOGOS.has(l[0]) ? '<span class="base">Included by default</span>' : '') + '</div>';
       }).join("") + '</div>';
 
   $("#vCross").innerHTML = h;
@@ -289,11 +314,13 @@ function renderCross(){
 }
 
 function refreshTabs(){
-  const sets = pastes.map(read), live = sets.filter(s => s.size);
+  const entered = pastes.map(read), live = entered.filter(s => s.size);
+  const sets = entered.map(s => addDefaults(new Set(s)));
   const shared = LOGOS.filter(l => sets.every(s => s.has(l[0]))).length;
   $("#tabMine").textContent  = mine.size + " / " + LOGOS.length + " selected";
   $("#tabCross").textContent = live.length
-    ? shared + " shared · " + live.length + " lists" : "no list yet";
+    ? shared + " shared · " + live.length + " lists"
+    : DEFAULT_IDS.length + " default shared · no list yet";
 }
 
 document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
